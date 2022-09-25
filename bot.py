@@ -1,4 +1,5 @@
 import discord
+from discord.ext.commands import Bot
 import os
 import json
 import time
@@ -36,7 +37,6 @@ async def update_stats():
 async def on_ready():
     print(f'We have logged in as {client.user}')
 
-
 @client.event
 async def on_member_join(member):
     global joined
@@ -55,6 +55,12 @@ async def on_message(msg):
     valid_users = ["sonhm#7995"]
 
     if str(msg.channel) in channels:
+        if msg.content == "$help":
+            embed = discord.Embed(title='Help on BOT', description='Some useful commands')
+            embed.add_field(name='$hello', value="Greets the user")
+            embed.add_field(name='$users', value="Number of users")
+            await msg.channel.send(content=None, embed=embed)
+
         if msg.content.find("$hello") != -1:
             await msg.channel.send("Hi!")
         elif msg.content == "$users":
