@@ -1,5 +1,7 @@
 import discord
 from constants.env import *
+from server.cmdFunc import CHANNEL_COMMAND
+from server.embed import chung_helper, music_helper, chat_helper
 
 # Embed helper command bot
 greeting_embed = discord.Embed(title='Help on BOT', description='Some useful commands')
@@ -8,26 +10,7 @@ greeting_embed.add_field(name='$help', value="See channel help")
 
 # channels
 channels = ['chatting', "music", 'chung']
-
-def initEmbed():
-    embed =  discord.Embed(title='Help on BOT', description='Some useful commands')
-    embed.add_field(name='$help', value="See channel help")
-    return  embed
-
 # Switcher on bot command
-async def chung_helper(channel):
-    chung_embed = initEmbed()
-    chung_embed.add_field(name='$statistic', value='See server statistic')
-    await channel.send(content=None, embed=chung_embed)
-
-async def music_helper(channel):
-    music_embed = initEmbed()
-    await channel.send(content=None, embed = music_embed)
-
-async def chat_helper(channel):
-    chat_embed = initEmbed()
-    await channel.send(content=None, embed = chat_embed)
-
 help_command = {
     'chung':chung_helper,
     'music': music_helper,
@@ -55,6 +38,19 @@ class SonHMBot(discord.Client):
         channel = msg.channel
         if msg.content == '$help' and (str(channel) in channels):
             await help_command[str(channel)](channel)
+        if str(channel) in channels and msg.content != '$help' and str(msg.content).startswith('$'):
+            try:
+                await CHANNEL_COMMAND[str(channel)][str(msg.content)[1:]]['action'](channel, self)
+            except KeyError:
+                embed_warning = discord.Embed(colour=discord.Colour.brand_red())
+                embed_warning.add_field(
+                    name="Wrong command!",
+                    value="You've send a wrong key, type $help to see list commands", 
+                )
+                await channel.send(
+                    content=None,
+                    embed=embed_warning
+                )
         
         
 
