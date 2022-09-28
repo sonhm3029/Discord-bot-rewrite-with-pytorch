@@ -34,13 +34,22 @@ class SonHMBot(discord.Client):
         
     async def on_message(self, msg):
         # Get server guide
+        author = str(msg.author)
         guide = self.get_guild(int(server_id))
         channel = msg.channel
+        print(str(msg.author) == 'simpson_2910#7555')
         if msg.content == '$help' and (str(channel) in channels):
             await help_command[str(channel)](channel)
-        if str(channel) in channels and msg.content != '$help' and str(msg.content).startswith('$'):
+        if (str(channel) in channels) and (msg.content != '$help') and (str(msg.content).startswith('$')) and (author != 'simpson_2910#7555'):
             try:
-                await CHANNEL_COMMAND[str(channel)][str(msg.content)[1:]]['action'](channel, self)
+                print("in")
+                command = str(msg.content)
+                following_vars = []
+                if('$play' in command):
+                    splitWord = command.split(' ')
+                    command = splitWord[0]
+                    following_vars = splitWord[1:]
+                await CHANNEL_COMMAND[str(channel)][command[1:]]['action'](channel, self, following_vars)
             except KeyError:
                 embed_warning = discord.Embed(colour=discord.Colour.brand_red())
                 embed_warning.add_field(
